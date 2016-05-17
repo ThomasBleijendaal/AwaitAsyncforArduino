@@ -234,3 +234,6 @@ _Pvt_Extensions
 
 # FAKE - F# Make
 .fake/
+AwaitAsyncforArduino/__vm/.AwaitAsyncforArduino.vsarduino.h
+AwaitAsyncforArduino/AwaitAsyncforArduino.vcxproj.filters
+AwaitAsyncforArduino/AwaitAsyncforArduino.vcxproj
