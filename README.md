@@ -37,6 +37,10 @@ void loop() {
 }
 
 void someFunction() {
+	if(AsyncHandler.IsAwaiting("methodAsync")) {
+		return;
+	}
+
 	string local1 = "a";
 	string local2 = "b";
 
