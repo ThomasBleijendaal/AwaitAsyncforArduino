@@ -1,6 +1,5 @@
 #define await(a) a
 #define async void
-#define async_bool bool
 
 // original
 /*
@@ -60,7 +59,7 @@ public:
 			// / edit
 		}
 
-		// / original method with retunrs edited
+		// / original method with returns edited
 	}
 } methodAsync;
 // / generated code
@@ -115,7 +114,7 @@ public:
 			callback(message);
 			// / edit
 		}
-		// / original method with retunrs edited
+		// / original method with returns edited
 	}
 } wait;
 // / generated code
