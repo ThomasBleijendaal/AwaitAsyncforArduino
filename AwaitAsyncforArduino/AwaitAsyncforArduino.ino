@@ -1,7 +1,5 @@
 #define await(a) a
 #define async void
-#define async_bool bool
-
 
 void setup() {
 	pinMode(13, OUTPUT);
@@ -19,8 +17,9 @@ void pinHandling() {
 }
 
 void postingMessage() {
+	String message = "Jeej";
 	await(wait(millis(), 1000));
-	Serial.println("Jeej");
+	Serial.println(message);
 }
 
 async methodAsync() {
@@ -41,10 +40,10 @@ async methodAsync() {
 	}
 }
 
-async_bool wait(long start, long delay) {
+async wait(long start, long delay) {
 	while (true) {
 		if (millis() - start > delay) {
-			return true;
+			return;
 		}
 	}
 }

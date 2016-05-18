@@ -237,4 +237,7 @@ _Pvt_Extensions
 AwaitAsyncforArduino/__vm/.AwaitAsyncforArduino.vsarduino.h
 AwaitAsyncforArduino/AwaitAsyncforArduino.vcxproj.filters
 AwaitAsyncforArduino/AwaitAsyncforArduino.vcxproj
-AwaitAsyncforArduino/__vm/Compile.vmps.xml
+AwaitAsyncforArduino/__vm/*.*
+AwaitAsyncforArduino_Converted/__vm/*.*
+AwaitAsyncforArduino_Converted/AwaitAsyncforArduino_Converted.vcxproj
+AwaitAsyncforArduino_Converted/AwaitAsyncforArduino_Converted.vcxproj.filters
