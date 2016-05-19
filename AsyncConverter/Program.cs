@@ -33,13 +33,84 @@ namespace AsyncConverter
 
 			Console.WriteLine(test.ToCode());
 
+			/*
+					class wait
+					{
+						private:
+				bool _isActive;
+						void(*callback)(String message);
+
+						// local context
+						String message;
+
+						// method parameters
+						long start;
+						long delay;
+
+						public:
+				void startMethod(String message, void(*callback)(String message), long start, long delay) {
+					this->message = message;
+
+					this->callback = callback;
+
+					this->start = start;
+					this->delay = delay;
+
+					this->_isActive = true;
+				}
+
+					bool isActive()
+					{
+						return _isActive;
+					}
+
+					void tryMethod()
+					{
+						// original method with returns edited
+						if (millis() - start > delay)
+						{
+							// edit
+							_isActive = false;
+							callback(message);
+							// / edit
+						}
+						// / original method with returns edited
+					}
+				}
+				wait;
+			*/
+
+			AsyncMethod test2 = new AsyncMethod();
+
+			test2.methodName = "wait";
+			test2.methodBody = @"if (Serial.available()) {{
+			String string;
+			string = Serial.readString();
+
+			if (string == ""a"")
+			{{
+				digitalWrite(13, true);
+			}}
+			else if (string == ""b"")
+			{{
+				digitalWrite(13, false);
+			}}
+
+			return;
+		}}";
+			test2.localContext.Add(new Variable { name = "message", type = "String" });
+			test2.arguments.Add(new Variable { name = "start", type = "long" });
+			test2.arguments.Add(new Variable { name = "delay", type = "long" });
+
+			Console.WriteLine(test2.ToCode());
+
 			Console.ReadLine();
 		}
 	}
 
 	public static class Convert
 	{
-		public static string ToString(this List<Variable> list, bool singleLine = false, bool trailingComma = false, bool startingComma = false, bool withValues = false, bool valuesOnly = false, bool setToThis = false)
+		public static string ToCodeString(this List<Variable> list, bool singleLine = false, bool trailingComma = false, bool startingComma = false, bool withValues = false, bool valuesOnly = false, bool namesOnly = false, bool setToThis = false)
 		{
 			if(setToThis || withValues)
 			{
@@ -60,7 +131,7 @@ namespace AsyncConverter
 				{
 					first = false;
 				}
-				else
+				else if(singleLine)
 				{
 					result += ", ";
 				}
@@ -69,13 +140,17 @@ namespace AsyncConverter
 				{
 					if(!withValues)
 					{
-						if(!valuesOnly)
+						if(valuesOnly)
+						{
+							result += var.value;
+						}
+						else if(namesOnly)
 						{
 							result += var.name;
 						}
 						else
 						{
-							result += var.value;
+							result += var.type + " " + var.name + ((!singleLine) ? ";" : "");
 						}
 					}
 					else
@@ -140,68 +215,85 @@ namespace AsyncConverter
 				methodName,
 				methodBodyBefore,
 				methodBodyAfter,
-				localContext.ToString(singleLine: true, trailingComma: true),
-				localContext.ToString(singleLine: true),
-				arguments.ToString(singleLine: true, startingComma: true, valuesOnly: true)
+				localContext.ToCodeString(singleLine: true, trailingComma: true),
+				localContext.ToCodeString(singleLine: true),
+				arguments.ToCodeString(singleLine: true, startingComma: true, valuesOnly: true)
 				);
 		}
 	}
 
 	public class AsyncMethod
 	{
-		// 1 = method name
-		// 2 = local context, single line
-		// 3 = local context, multi line
-		// 4 = local context, set to this->
-		// 5 = method parameters, single line, starting with comma
-		// 6 = method parameters, multi line
-		// 7 = method parameters, set to this->
-		// 8 = original methods, with returns replaced
-		private string code = @"
-			class $1
-			{
+		// 0 = method name
+		// 1 = local context, single line
+		// 2 = local context, multi line
+		// 3 = local context, set to this->
+		// 4 = method parameters, single line, starting with comma
+		// 5 = method parameters, multi line
+		// 6 = method parameters, set to this->
+		// 7 = local context, single line, names only
+		private string code1 = @"
+			class {0}
+			{{
 			private:
 				bool _isActive;
-				void(*callback)($2);
+				void(*callback)({1});
 
 				// local context
-				$3
+				{2}
 
 				// method parameters
-				$6
+				{5}
 
 			public:
-				void startMethod($2, void(*callback)($2)$5) {
-					$4
+				void startMethod({1}, void(*callback)({1}){4}) {{
+					{3}
 
 					this->callback = callback;
 
-					$7
+					{6}
 
 					this->_isActive = true;
-				}
+				}}
 
-				bool isActive() {
+				bool isActive() {{
 					return _isActive;
-				}
+				}}
 
-				void tryMethod() {
+				void tryMethod() {{
 					// original method with returns edited
-					$8
+
+					";
+		private string code2 = @"
+
 					// / original method with returns edited
-				}
-			} $1;
+				}}
+			}} {0};
 		";
+		private string returnReplace = @"_isActive = false; callback({7});";
 
 		public string methodName = "";
+		public string methodBody = "";
 		public List<Variable> arguments = new List<Variable>();
 		public List<Variable> localContext = new List<Variable>();
 		// Variable returnVariable;
 
-		public AsyncMethod()
+		public string ToCode()
 		{
-		}
+			string replacedMethodBody = methodBody.Replace("return;", returnReplace);
 
+			string code = code1 + replacedMethodBody + code2;
+
+			return string.Format(code,
+				methodName,
+				localContext.ToCodeString(singleLine: true),
+				localContext.ToCodeString(),
+				localContext.ToCodeString(setToThis: true),
+				arguments.ToCodeString(singleLine: true, startingComma: true),
+				arguments.ToCodeString(),
+				arguments.ToCodeString(setToThis: true),
+				localContext.ToCodeString(singleLine: true, namesOnly: true));
+		}
 
 	}
 
