@@ -74,5 +74,23 @@ namespace AsyncConverter
 
 			return result;
 		}
+		public static List<Variable> ToVariableList(this string code)
+		{
+			List<Variable> list = new List<Variable>();
+
+			foreach(string part in code.Split(','))
+			{
+				string[] typename = part.Split(" ".ToCharArray(),2);
+
+				Variable var = new Variable();
+
+				var.name = typename[1].Replace(" ","");
+				var.type = typename[0].Replace(" ","");
+
+				list.Add(var);
+			}
+
+			return list;
+		}
 	}
 }

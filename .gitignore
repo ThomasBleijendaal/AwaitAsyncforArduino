@@ -244,3 +244,6 @@ AwaitAsyncforArduino_Converted/AwaitAsyncforArduino_Converted.vcxproj.filters
 AsyncConverter/Properties/AssemblyInfo.cs
 AwaitAsyncConverter/Properties/AssemblyInfo.cs
 *.csproj
+AwaitAsyncforArduino/__vm/Configuration.Debug.vmps.xml
+AwaitAsyncforArduino/__vm/Configuration.Debug.vmps.xml
+AwaitAsyncforArduino/__vm/Configuration.Debug.vmps.xml

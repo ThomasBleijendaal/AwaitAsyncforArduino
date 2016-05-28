@@ -1,5 +1,5 @@
 #define await(a) a
-#define async void
+#define async_void void
 
 void setup() {
 	pinMode(13, OUTPUT);
@@ -22,12 +22,12 @@ void postingMessage() {
 	Serial.println(message);
 }
 
-async methodAsync() {
+async_void methodAsync() {
 	while (true) {
 		if (Serial.available()) {
 			String string;
 			string = Serial.readString();
-
+			
 			if (string == "a") {
 				digitalWrite(13, true);
 			}
@@ -40,7 +40,7 @@ async methodAsync() {
 	}
 }
 
-async wait(long start, long delay) {
+async_void wait(long start, long delay) {
 	while (true) {
 		if (millis() - start > delay) {
 			return;

@@ -1,7 +1,9 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 
 using AsyncConverter.Generators;
+using AsyncConverter.Interpreters;
 
 namespace AsyncConverter
 {
@@ -9,6 +11,19 @@ namespace AsyncConverter
 	{
 		static void Main(string[] args)
 		{
+			SourceCode.OpenFile(@"D:\AwaitAsyncforArduino\AwaitAsyncforArduino\AwaitAsyncforArduino.ino");
+
+			SourceCode.ParseFile();
+
+			foreach(string line in SourceCode.lines)
+			{
+				Console.WriteLine(line);
+			}
+
+			Console.ReadLine();
+
+		}
+		static void TestGenerators() { 
 			/*
 			void postingMessage() {
 				if (wait.isActive()) { return; }

@@ -119,5 +119,16 @@ namespace AsyncConverter.Generators
 				localContext.ToCodeString(singleLine: true, namesOnly: true));
 		}
 
+		public static AsyncMethod CreateFromMethod(Method method)
+		{
+			AsyncMethod m = new AsyncMethod();
+
+			m.methodName = method.name;
+			m.methodBody = method.body;
+			m.arguments = method.arguments.ToVariableList();
+
+			return m;
+		}
+
 	}
 }
