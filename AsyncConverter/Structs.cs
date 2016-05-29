@@ -12,7 +12,7 @@
 		public string name;
 		public string returnType;
 		public string arguments;
-		public string body;
+		public string[] body;
 
 		public int startingLine;
 		public int endingLine;

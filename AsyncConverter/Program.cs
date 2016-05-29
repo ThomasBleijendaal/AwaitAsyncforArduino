@@ -11,14 +11,11 @@ namespace AsyncConverter
 	{
 		static void Main(string[] args)
 		{
-			SourceCode.OpenFile(@"D:\AwaitAsyncforArduino\AwaitAsyncforArduino\AwaitAsyncforArduino.ino");
+			SourceCode.OpenFile(@"D:\AwaitAsyncforArduino\AwaitAsyncforArduino\", "AwaitAsyncforArduino.ino");
 
 			SourceCode.ParseFile();
 
-			foreach(string line in SourceCode.lines)
-			{
-				Console.WriteLine(line);
-			}
+			SourceCode.SaveFile(@"D:\AwaitAsyncforArduino\AwaitAsyncforArduino_Converted\", "AwaitAsyncforArduino_Converted.ino");
 
 			Console.ReadLine();
 
@@ -41,7 +38,7 @@ namespace AsyncConverter
 			test.methodName = "postingMesage";
 			test.methodBodyBefore = @"String message = ""Jeej"";";
 			test.methodBodyAfter = @"Serial.println(message);";
-			test.localContext.Add(new Variable { name = "message", type = "String", value = "\"Jeej\"" });
+			test.localContext.Add(new Variable { name = "message", type = "String" });
 			test.arguments.Add(new Variable { value = "millis()" });
 			test.arguments.Add(new Variable { value = "1000" });
 

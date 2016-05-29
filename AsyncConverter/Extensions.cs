@@ -4,12 +4,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using AsyncConverter.Generators;
+using AsyncConverter.Interpreters;
+
 namespace AsyncConverter
 {
-	public static class Convert
+	public static class Extensions
 	{
 		public static string ToCodeString(this List<Variable> list, bool singleLine = false, bool trailingComma = false, bool startingComma = false, bool withValues = false, bool valuesOnly = false, bool namesOnly = false, bool setToThis = false)
 		{
+			if (list.Count == 0)
+			{
+				return "";
+			}
+
 			if (setToThis || withValues)
 			{
 				singleLine = false;
@@ -78,19 +86,68 @@ namespace AsyncConverter
 		{
 			List<Variable> list = new List<Variable>();
 
-			foreach(string part in code.Split(','))
+			if (code != "")
 			{
-				string[] typename = part.Split(" ".ToCharArray(),2);
+				
+				foreach (string part in code.Split(','))
+				{
+					string[] typename = part.Trim().Split(" ".ToCharArray(), 2);
 
-				Variable var = new Variable();
+					Variable var = new Variable();
 
-				var.name = typename[1].Replace(" ","");
-				var.type = typename[0].Replace(" ","");
+					var.name = typename[1].Trim();
+					var.type = typename[0].Trim();
 
-				list.Add(var);
+					list.Add(var);
+				}
+
 			}
 
 			return list;
+		}
+		public static List<Variable> ToCallList(this string code)
+		{
+			List<Variable> list = new List<Variable>();
+
+			if (code != "")
+			{
+
+				foreach (string part in code.Split(','))
+				{
+					Variable var = new Variable();
+
+					var.value = part.Trim();
+
+					list.Add(var);
+				}
+
+			}
+
+			return list;
+		}
+		public static AsyncMethod FindMethodByName(this List<AsyncMethod> list, string methodName, string callerName)
+		{
+			foreach (AsyncMethod method in list)
+			{
+				if (method.methodName == methodName && method.callerName == callerName)
+				{
+					return method;
+				}
+			}
+
+			return null;
+		}
+		public static AsyncMethod FindMethodByName(this List<AsyncMethod> list, string methodName)
+		{
+			foreach(AsyncMethod method in list)
+			{
+				if(method.methodName == methodName)
+				{
+					return method;
+				}
+			}
+
+			return null;
 		}
 	}
 }

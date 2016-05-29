@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.IO;
@@ -11,52 +12,102 @@ namespace AsyncConverter.Interpreters
 	public static class SourceCode
 	{
 		public static string[] lines;
+		public static List<AsyncMethod> asyncMethods;
+		public static List<AwaitCall> awaitCalls;
 
-		public static void OpenFile(string path)
+		public static void OpenFile(string folder, string file)
 		{
-			if(File.Exists(path))
+			if(File.Exists(folder + file))
 			{
-				lines = File.ReadAllLines(path);
+				lines = File.ReadAllLines(folder + file);
 			}
+		}
+
+		public static void SaveFile(string folder, string file)
+		{
+			File.WriteAllLines(folder + file, lines);
 		}
 
 		public static void ParseFile()
 		{
 			ParseAsyncMethods();
+			ParseAwaitCalls();
+
+			foreach (AwaitCall method in awaitCalls)
+			{
+				lines = method.ToCode().Split('\n').Concat(lines).ToArray();
+			}
+
+			foreach (AsyncMethod method in asyncMethods)
+			{
+				if (method.callerName != "")
+				{
+					lines = method.ToCode().Split('\n').Concat(lines).ToArray();
+				}
+			}
 		}
 
 		public static void ParseAsyncMethods()
 		{
-			IEnumerable<Method> methods = GetMethods();
-			List<AsyncMethod> asyncMethods = new List<AsyncMethod>();
+			IEnumerable<Method> methods = GetMethods("async_",true);
+			asyncMethods = new List<AsyncMethod>();
 
-			// comment out all normal methods
+			// comment out all normal async methods
 			// create AsyncMethods from Methods
 
 			foreach (Method method in methods)
 			{
-				for(int i = method.startingLine; i <= method.endingLine; i++)
+				for (int i = method.startingLine; i <= method.endingLine; i++)
 				{
 					lines[i] = "//" + lines[i];
 				}
-				
-				//asyncMethods.Add(AsyncMethod.CreateFromMethod(method));
+
+				asyncMethods.Add(AsyncMethod.CreateFromMethod(method));
 			}
 
-			/*foreach (AsyncMethod asyncMethod in asyncMethods)
-			{
-				string[] code = asyncMethod.ToCode().Split('\n');
-
-				lines = lines.
-			}*/
+			
 		}
 
+		public static void ParseAwaitCalls()
+		{
+			IEnumerable<Method> methods = GetMethods("async_", false);
+			awaitCalls = new List<AwaitCall>();
 
-		public static IEnumerable<Method> GetMethods()
+			Regex awaitCall = new Regex(@"await\(([A-Za-z0-9_]*)\(");
+			Match callMatches;
+
+			// comment out all normal methods with an await call
+			foreach(Method method in methods)
+			{
+				foreach(string line in method.body)
+				{
+					if(awaitCall.IsMatch(line))
+					{
+						callMatches = awaitCall.Match(line);
+
+						string asyncMethodName = callMatches.Groups[1].Value;
+						AsyncMethod asyncMethod = asyncMethods.FindMethodByName(asyncMethodName).Clone();
+
+						asyncMethod.callerName = method.name;
+						asyncMethods.Add(asyncMethod);
+
+						for (int i = method.startingLine; i <= method.endingLine; i++)
+						{
+							lines[i] = "//" + lines[i];
+						}
+
+						awaitCalls.Add(AwaitCall.CreateFromMethod(method));
+
+					}
+				}
+			}
+		}
+
+		public static IEnumerable<Method> GetMethods(string startingWith, bool hasWhile)
 		{
 			Method method = new Method();
-			Regex methodFinder = new Regex(@"async_([A-Za-z0-9\-_]+)[\s]+([A-Za-z0-9\-_]+)\(([A-Za-z0-9\s\-_,]*)\)[\s]*\{");
-			MatchCollection methodMatches;
+			Regex methodFinder = new Regex(startingWith + @"([A-Za-z0-9\-_]+)[\s]+([A-Za-z0-9\-_]+)\(([A-Za-z0-9\s\-_,]*)\)[\s]*\{");
+			Match methodMatches;
 			Regex whileFinder = new Regex(@"while[\s]+\([\s]*true[\s]*\)[\s]*\{");
 
 			bool methodFound = false;
@@ -69,15 +120,19 @@ namespace AsyncConverter.Interpreters
 			{
 				if(methodFinder.IsMatch(line))
 				{
-					methodMatches = methodFinder.Matches(line);
+					methodMatches = methodFinder.Match(line);
 
 					methodFound = true;
 					method = new Method();
-					method.name = methodMatches[0].Groups[2].Value;
-					method.returnType = methodMatches[0].Groups[1].Value;
-					method.arguments = methodMatches[0].Groups[3].Value;
+					method.name = methodMatches.Groups[2].Value;
+					method.returnType = methodMatches.Groups[1].Value;
+					method.arguments = methodMatches.Groups[3].Value;
 
 					method.startingLine = i;
+
+					methodStartAt = i + 1;
+
+					whileFound = !hasWhile;
 				}
 				else if(methodFound && whileFinder.IsMatch(line))
 				{
@@ -99,14 +154,14 @@ namespace AsyncConverter.Interpreters
 				{
 					int k = 0;
 
-					string[] body = new string[i - methodStartAt - 1];
+					string[] body = new string[i - methodStartAt - ((hasWhile) ? 1 : 0)];
 
-					for (int j = methodStartAt; j < i - 1; j++)
+					for (int j = methodStartAt; j < i - ((hasWhile) ? 1 : 0); j++)
 					{
 						body[k++] = lines[j];
 					}
 
-					method.body = string.Join("\n", body);
+					method.body = body;
 					method.endingLine = i;
 
 					yield return method;

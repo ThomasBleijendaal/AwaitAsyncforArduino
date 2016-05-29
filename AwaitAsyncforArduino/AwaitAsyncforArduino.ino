@@ -12,11 +12,11 @@ void loop() {
 	postingMessage();
 }
 
-void pinHandling() {
+async_void pinHandling() {
 	await(methodAsync());
 }
 
-void postingMessage() {
+async_void postingMessage() {
 	String message = "Jeej";
 	await(wait(millis(), 1000));
 	Serial.println(message);
