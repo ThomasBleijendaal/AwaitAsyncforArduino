@@ -17,7 +17,6 @@ namespace AsyncConverter
 
 			SourceCode.SaveFile(@"D:\AwaitAsyncforArduino\AwaitAsyncforArduino_Converted\", "AwaitAsyncforArduino_Converted.ino");
 
-			Console.ReadLine();
 
 		}
 		static void TestGenerators() { 

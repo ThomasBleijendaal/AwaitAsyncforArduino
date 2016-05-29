@@ -89,7 +89,7 @@ namespace AsyncConverter.Generators
 
 				if(before)
 				{
-					m.methodBodyBefore += "\n" + line;
+					m.methodBodyBefore += "\r\n" + line;
 				}
 				else if(!before && !stopFindingLocalContext)
 				{
@@ -97,7 +97,7 @@ namespace AsyncConverter.Generators
 				}
 				else
 				{
-					m.methodBodyAfter += "\n" + line;
+					m.methodBodyAfter += "\r\n" + line;
 				}
 			}
 
@@ -188,7 +188,7 @@ namespace AsyncConverter.Generators
 			AsyncMethod m = new AsyncMethod();
 			
 			m.methodName = method.name;
-			m.methodBody = string.Join("\n",method.body);
+			m.methodBody = string.Join("\r\n",method.body);
 
 			m.arguments = method.arguments.ToVariableList();
 

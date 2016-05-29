@@ -25,7 +25,7 @@ namespace AsyncConverter.Interpreters
 
 		public static void SaveFile(string folder, string file)
 		{
-			File.WriteAllLines(folder + file, lines);
+			File.WriteAllText(folder + file, string.Join("\r\n",lines));
 		}
 
 		public static void ParseFile()
@@ -35,14 +35,14 @@ namespace AsyncConverter.Interpreters
 
 			foreach (AwaitCall method in awaitCalls)
 			{
-				lines = method.ToCode().Split('\n').Concat(lines).ToArray();
+				lines = method.ToCode().Split(new string[] { "\r\n" }, StringSplitOptions.None).Concat(lines).ToArray();
 			}
 
 			foreach (AsyncMethod method in asyncMethods)
 			{
 				if (method.callerName != "")
 				{
-					lines = method.ToCode().Split('\n').Concat(lines).ToArray();
+					lines = method.ToCode().Split(new string[] { "\r\n" }, StringSplitOptions.None).Concat(lines).ToArray();
 				}
 			}
 		}
