@@ -14,6 +14,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AwaitAsyncforArduino", "Awa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AsyncConverter", "AsyncConverter\AsyncConverter.csproj", "{28083A3B-E220-4F7E-8CAF-434772D86792}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AwaitAsyncforArduino_Manual", "AwaitAsyncforArduino_Manual\AwaitAsyncforArduino_Manual.vcxproj", "{F5FC7E1C-174F-4E7F-8B5C-A26B478AB465}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,6 +44,12 @@ Global
 		{28083A3B-E220-4F7E-8CAF-434772D86792}.Release|Any CPU.Build.0 = Release|Any CPU
 		{28083A3B-E220-4F7E-8CAF-434772D86792}.Release|x86.ActiveCfg = Release|Any CPU
 		{28083A3B-E220-4F7E-8CAF-434772D86792}.Release|x86.Build.0 = Release|Any CPU
+		{F5FC7E1C-174F-4E7F-8B5C-A26B478AB465}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{F5FC7E1C-174F-4E7F-8B5C-A26B478AB465}.Debug|x86.ActiveCfg = Debug|Win32
+		{F5FC7E1C-174F-4E7F-8B5C-A26B478AB465}.Debug|x86.Build.0 = Debug|Win32
+		{F5FC7E1C-174F-4E7F-8B5C-A26B478AB465}.Release|Any CPU.ActiveCfg = Release|Win32
+		{F5FC7E1C-174F-4E7F-8B5C-A26B478AB465}.Release|x86.ActiveCfg = Release|Win32
+		{F5FC7E1C-174F-4E7F-8B5C-A26B478AB465}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

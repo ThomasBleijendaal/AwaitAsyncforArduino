@@ -19,7 +19,6 @@ namespace AsyncConverter.Generators
 		private string code = @"
 			{0} {1}() {{
 				if ({7}For{1}.isActive()) {{ return; }}
-
 				{2}
 
 				{7}For{1}.startMethod({4}{1}Callback1{6});
@@ -127,18 +126,14 @@ namespace AsyncConverter.Generators
 
 				// local context
 				{2}
-
 				// method parameters
 				{5}
-
 			public:
 				void startMethod({8}void(*callback)({1}){4}) {{
 					{3}
-
 					this->callback = callback;
 
 					{6}
-
 					this->_isActive = true;
 				}}
 
@@ -147,12 +142,8 @@ namespace AsyncConverter.Generators
 				}}
 
 				void tryMethod() {{
-					// original method with returns edited
-
 					";
 		private string code2 = @"
-
-					// / original method with returns edited
 				}}
 			}} {0};
 		";
@@ -200,5 +191,39 @@ namespace AsyncConverter.Generators
 			return (AsyncMethod)MemberwiseClone();
 		}
 
+	}
+
+	public static class AsyncHandler
+	{
+		private static string classCode = @"
+			class AsyncHandler
+			{{
+			public:
+				void loop() {{
+					{0}
+				}}
+			}} AsyncHandler;";
+		private static string instanceCode = @"
+			if ({0}.isActive()) {{
+				{0}.tryMethod();
+			}}";
+
+		public static string loopCode = @"AsyncHandler.loop();";
+
+		public static string ToCode()
+		{
+			string[] instances = new string[SourceCode.asyncMethods.Count];
+			int i = 0;
+
+			foreach (AsyncMethod method in SourceCode.asyncMethods)
+			{
+				if (method.methodName != "" && method.callerName != "")
+				{
+					instances[i++] = string.Format(instanceCode, method.methodName + "For" + method.callerName);
+				}
+			}
+
+			return string.Format(classCode, string.Join("\r\n", instances));
+		}
 	}
 }

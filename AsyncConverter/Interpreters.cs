@@ -32,6 +32,11 @@ namespace AsyncConverter.Interpreters
 		{
 			ParseAsyncMethods();
 			ParseAwaitCalls();
+			ParseLoopMethod();
+
+			// todo: change this
+
+			lines = AsyncHandler.ToCode().Split(new string[] { "\r\n" }, StringSplitOptions.None).Concat(lines).ToArray();
 
 			foreach (AwaitCall method in awaitCalls)
 			{
@@ -45,6 +50,8 @@ namespace AsyncConverter.Interpreters
 					lines = method.ToCode().Split(new string[] { "\r\n" }, StringSplitOptions.None).Concat(lines).ToArray();
 				}
 			}
+
+			
 		}
 
 		public static void ParseAsyncMethods()
@@ -101,6 +108,21 @@ namespace AsyncConverter.Interpreters
 					}
 				}
 			}
+		}
+
+		public static void ParseLoopMethod()
+		{
+			IEnumerable<Method> methods = GetMethods("", false);
+
+			foreach(Method method in methods)
+			{
+				if(method.name == "loop")
+				{
+					int index = lines[method.endingLine].LastIndexOf('}');
+					lines[method.endingLine] = lines[method.endingLine].Insert(index, AsyncHandler.loopCode);
+				}
+			}
+
 		}
 
 		public static IEnumerable<Method> GetMethods(string startingWith, bool hasWhile)

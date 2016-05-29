@@ -8,22 +8,18 @@
 				// local context
 				String message;
 
-
 				// method parameters
 				long start;
 long delay;
-
 
 			public:
 				void startMethod(String message, void(*callback)(String message), long start, long delay) {
 					this->message = message;
 
-
 					this->callback = callback;
 
 					this->start = start;
 this->delay = delay;
-
 
 					this->_isActive = true;
 				}
@@ -33,13 +29,9 @@ this->delay = delay;
 				}
 
 				void tryMethod() {
-					// original method with returns edited
-
 							if (millis() - start > delay) {
 			_isActive = false; callback(message);
 		}
-
-					// / original method with returns edited
 				}
 			} waitForpostingMessage;
 		
@@ -52,18 +44,14 @@ this->delay = delay;
 
 				// local context
 				
-
 				// method parameters
 				
-
 			public:
 				void startMethod(void(*callback)()) {
 					
-
 					this->callback = callback;
 
 					
-
 					this->_isActive = true;
 				}
 
@@ -72,8 +60,6 @@ this->delay = delay;
 				}
 
 				void tryMethod() {
-					// original method with returns edited
-
 							if (Serial.available()) {
 			String string;
 			string = Serial.readString();
@@ -87,15 +73,12 @@ this->delay = delay;
 
 			_isActive = false; callback();
 		}
-
-					// / original method with returns edited
 				}
 			} methodAsyncForpinHandling;
 		
 
 			void postingMessage() {
 				if (waitForpostingMessage.isActive()) { return; }
-
 				
 	String message = "Jeej";
 
@@ -110,7 +93,6 @@ this->delay = delay;
 
 			void pinHandling() {
 				if (methodAsyncForpinHandling.isActive()) { return; }
-
 				
 
 				methodAsyncForpinHandling.startMethod(pinHandlingCallback1);
@@ -120,6 +102,23 @@ this->delay = delay;
 				
 			}
 		
+
+			class AsyncHandler
+			{
+			public:
+				void loop() {
+					
+			if (methodAsyncForpinHandling.isActive()) {
+				methodAsyncForpinHandling.tryMethod();
+			}
+
+			if (waitForpostingMessage.isActive()) {
+				waitForpostingMessage.tryMethod();
+			}
+
+
+				}
+			} AsyncHandler;
 #define await(a) a
 #define async_void void
 
@@ -132,7 +131,7 @@ void setup() {
 void loop() {
 	pinHandling();
 	postingMessage();
-}
+AsyncHandler.loop();}
 
 //async_void pinHandling() {
 //	await(methodAsync());
